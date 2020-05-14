@@ -11,7 +11,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String serverEndPoint = "";
+  final String serverEndPoint = "https://9c06979d.ngrok.io";
 
   File file;
 
@@ -21,8 +21,9 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {});
   }
 
-  void _upload() {
+  void _upload() async {
     if (file == null) return;
+
     String base64Image = base64Encode(file.readAsBytesSync());
     String fileName = file.path.split("/").last;
 
@@ -44,6 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: <Widget>[
+          file == null ? Text('No Image Selected') : Image.file(file),
+          Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -58,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               )
             ],
           ),
-          file == null ? Text('No Image Selected') : Image.file(file)
+          SizedBox(height: 22.0),
         ],
       ),
     );
