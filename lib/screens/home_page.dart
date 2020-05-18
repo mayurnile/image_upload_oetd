@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'dart:convert';
 
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,7 +10,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final String serverEndPoint = "https://9c06979d.ngrok.io";
+  final String serverEndPoint = "https://cacb6553.ngrok.io/api/test";
 
   File file;
 
@@ -23,18 +22,19 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _upload() async {
     if (file == null) return;
+    //create multipart request for POST or PATCH method
+    var request = http.MultipartRequest("POST", Uri.parse(serverEndPoint));
 
-    String base64Image = base64Encode(file.readAsBytesSync());
-    String fileName = file.path.split("/").last;
+    //create multipart using filepath, string or bytes
+    var pic = await http.MultipartFile.fromPath("image", file.path);
+    //add multipart to request
+    request.files.add(pic);
+    var response = await request.send();
 
-    http.post(serverEndPoint, body: {
-      "image": base64Image,
-      "name": fileName,
-    }).then((res) {
-      print(res.statusCode);
-    }).catchError((err) {
-      print(err);
-    });
+    //Get the response from the server
+    var responseData = await response.stream.toBytes();
+    var responseString = String.fromCharCodes(responseData);
+    print(responseString);
   }
 
   @override
